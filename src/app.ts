@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-
 import apiErrorHandler from "./middlewares/apiErrorHandler";
 import apiContentType from "./middlewares/apiContentType";
 import todoRouter from "./routers/todo.router";
