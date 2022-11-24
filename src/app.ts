@@ -5,11 +5,11 @@ import apiErrorHandler from "./middlewares/apiErrorHandler";
 import apiContentType from "./middlewares/apiContentType";
 import todoRouter from "./routers/todo.router";
 
-dotenv.config({ path: ".env" });
+dotenv.config();
 const app = express();
 
 // Express configuration
-app.set("port", process.env.PORT);
+app.set("port", process.env["PORT"]);
 
 // Global middleware
 app.use(cors({
@@ -20,7 +20,7 @@ app.use(apiContentType);
 app.use(express.json());
 
 // Set up routers
-app.use("api/v1/todos", todoRouter);
+app.use("/api/v1/todos", todoRouter);
 
 // Custom API error handler
 app.use(apiErrorHandler);

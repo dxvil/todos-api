@@ -1,35 +1,42 @@
-import { Client } from "pg";
+import { Client, Pool } from "pg";
 import app from "./app";
 
 export const client = new Client({
 	user: "postgres",
 	database: "postgres",
-	password: "postgres"
+	password: "postgres",
+	host: "localhost",
+	port: 5432,
 });
 
+export const pool = new Pool({
+	user: "postgres",
+	database: "postgres",
+	password: "postgres",
+	host: "localhost",
+	port: 5432
+});
+
+const dropTableQuery = "DROP TABLE IF EXISTS todos;";
 const createTableQuery = `CREATE TABLE IF NOT EXISTS todos(
-id UUID PRIMARY KEY,
-name CHAR NOT NULL,
+id SERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
 description VARCHAR(255),
-user_id INT NOT NULL,
+user_id INTEGER,
 created TIMESTAMPTZ,
 updated TIMESTAMPTZ,
 status boolean
 );`;
 
-const dbname = "appTodo";
         
 const createDatabase = async () => {
 	try {
-		await client.query(`DROP DATABASE IF EXISTS ${dbname};`);
-		await client.query(`CREATE DATABASE ${dbname};`);
+		await client.query(dropTableQuery);
 		await client.query(createTableQuery);
 		return true;
 	} catch (error: any) {
 		console.error(error.stack);
 		return false;
-	} finally {
-		await client.end();
 	}
 };
 
