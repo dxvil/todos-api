@@ -24,8 +24,9 @@ class TodoController {
 	}
 	async createTodo (req: Request, res: Response, next: NextFunction) {
 		try {
-			const data: TodosDocument = req.body;
-			const requiredError = this.checkRequired(data);
+			let { status }: TodosDocument = req.body;
+			const { name, description, user_id }: TodosDocument = req.body;
+			const requiredError = this.checkRequired(req.body);
 			
 			if(requiredError.length > 0) {
 				res.json({
@@ -36,12 +37,12 @@ class TodoController {
 			}
 		
 			const created = new Date();
-			const status = "status" in data ? data?.status : false;
+			status = status ? status : false;
 
 			const newTodo = await client.query(`INSERT INTO todos 
 			(name, description, status, user_id , created, updated)
 			values ($1, $2, $3, $4, $5, $6) RETURNING *`, 
-			[data?.name, data?.description, status, 0, created, created]);
+			[name, description, status, user_id, created, created]);
 
 			res.json(newTodo.rows[0]);
 		} catch(err){
@@ -51,20 +52,22 @@ class TodoController {
 	async updateTodo(req: Request,res: Response){
 		try {
 			const { id } = req.params;
-			const data = req.body;
+			const { name, description, status }: TodosDocument = req.body;
 
 			const updated = new Date();
+
 			const todo = await client.query("SELECT * FROM todos WHERE id = $1", [id]);
 			const prevTodoData = todo.rows[0];
+			
 			await client.query(`UPDATE todos SET 
 			name = $2, description = $3, status = $4, updated = $5,
 			created = $6, user_id = $7
 			WHERE id = $1`,
 			[
 				id, 
-				data?.name ?? prevTodoData.name, 
-				data?.description ?? prevTodoData.description, 
-				data?.status ?? prevTodoData.status,
+				name ?? prevTodoData.name, 
+				description ?? prevTodoData.description, 
+				status ?? prevTodoData.status,
 				updated,
 				prevTodoData.created,
 				prevTodoData.user_id

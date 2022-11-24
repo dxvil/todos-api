@@ -1,4 +1,4 @@
-import { Client, Pool } from "pg";
+import { Client } from "pg";
 import app from "./app";
 
 export const client = new Client({
@@ -9,33 +9,36 @@ export const client = new Client({
 	port: 5432,
 });
 
-export const pool = new Pool({
-	user: "postgres",
-	database: "postgres",
-	password: "postgres",
-	host: "localhost",
-	port: 5432
-});
+const dropTableTodosQuery = "DROP TABLE IF EXISTS todos;";
+const dropTableUsersQuery = "DROP TABLE IF EXISTS registeredUsers;";
 
-const dropTableQuery = "DROP TABLE IF EXISTS todos;";
-const createTableQuery = `CREATE TABLE IF NOT EXISTS todos(
-id SERIAL PRIMARY KEY,
-name VARCHAR(255) NOT NULL,
-description VARCHAR(255),
-user_id INTEGER,
-created TIMESTAMPTZ,
-updated TIMESTAMPTZ,
-status boolean
-);`;
-
+const createTableTodosQuery = `CREATE TABLE IF NOT EXISTS todos(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255) NOT NULL,
+	description VARCHAR(255),
+	user_id SERIAL,
+	created TIMESTAMPTZ,
+	updated TIMESTAMPTZ,
+	status boolean,
+	CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES registeredUsers (id)
+	);`;
+	
+const createTableUsersQuery = `CREATE TABLE IF NOT EXISTS registeredUsers(
+	id SERIAL PRIMARY KEY,
+	email VARCHAR(255) NOT NULL,
+	password VARCHAR(150) NOT NULL,
+	created TIMESTAMPTZ,
+	updated TIMESTAMPTZ
+	);`;
         
 const createDatabase = async () => {
 	try {
-		await client.query(dropTableQuery);
-		await client.query(createTableQuery);
+		await client.query(dropTableTodosQuery);
+		await client.query(dropTableUsersQuery);
+		await client.query(createTableUsersQuery);
+		await client.query(createTableTodosQuery);
 		return true;
 	} catch (error: any) {
-		console.error(error.stack);
 		return false;
 	}
 };

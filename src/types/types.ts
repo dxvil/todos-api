@@ -7,3 +7,8 @@ export type TodosDocument = {
     updated?: string
     status?: boolean
 }
+
+export type TUser = {
+    email: "string"
+    password: "string"
+}
