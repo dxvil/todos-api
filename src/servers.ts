@@ -19,7 +19,7 @@ const createTableTodosQuery = `CREATE TABLE IF NOT EXISTS todos(
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
 	description VARCHAR(255),
-	user_id SERIAL,
+	user_id SERIAL NOT NULL,
 	created TIMESTAMPTZ,
 	updated TIMESTAMPTZ,
 	status statusEnum,

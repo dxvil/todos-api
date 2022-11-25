@@ -3,6 +3,7 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 const options: swaggerJsdoc.Options = {
+	basePath: "/",
 	definition: {
 		openapi: "3.0.0",
 		info: {
@@ -10,21 +11,18 @@ const options: swaggerJsdoc.Options = {
 			version: "1.0.0",
 		},
 		components: {
-			securitySchemas: {
-				bearerAuth: {
-					type: "http",
-					scheme: "bearer",
-					bearerFormat: "JWT",
+			securitySchemes: {
+				Authorization: {
+					type: "apiKey",
+					name: "authorization",
+					in: "header",
+					description: "Authentication token"
 				},
 			},
-		},
-		security: [
-			{
-				bearerAuth: [],
-			},
-		],
+		}
 	},
 	apis: ["./src/routers/*.ts"],
+	swagger: "2.0",
 };
 
 const swaggerSpec = swaggerJsdoc(options);
