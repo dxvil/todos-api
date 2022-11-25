@@ -1,5 +1,6 @@
 import { Client } from "pg";
 import app from "./app";
+import swaggerDocs from "./util/swagger";
 
 export const client = new Client({
 	user: "postgres",
@@ -8,6 +9,8 @@ export const client = new Client({
 	host: "localhost",
 	port: 5432,
 });
+const status = "CREATE TYPE statusEnum AS ENUM ('NotStarted', 'OnGoing', 'Completed');";
+const dropStatus = "DROP TYPE IF EXISTS statusEnum";
 
 const dropTableTodosQuery = "DROP TABLE IF EXISTS todos;";
 const dropTableUsersQuery = "DROP TABLE IF EXISTS registeredUsers;";
@@ -19,7 +22,7 @@ const createTableTodosQuery = `CREATE TABLE IF NOT EXISTS todos(
 	user_id SERIAL,
 	created TIMESTAMPTZ,
 	updated TIMESTAMPTZ,
-	status boolean,
+	status statusEnum,
 	CONSTRAINT FK_user_id FOREIGN KEY (user_id) REFERENCES registeredUsers (id)
 	);`;
 	
@@ -35,7 +38,9 @@ const createDatabase = async () => {
 	try {
 		await client.query(dropTableTodosQuery);
 		await client.query(dropTableUsersQuery);
+		await client.query(dropStatus);
 		await client.query(createTableUsersQuery);
+		await client.query(status);
 		await client.query(createTableTodosQuery);
 		return true;
 	} catch (error: any) {
@@ -53,7 +58,11 @@ client.connect((err: any) => {
 					if (result) {
 						console.log("Database created", result);
 					}
+				})
+				.catch((err) => {
+					console.log(err);
 				});
+			swaggerDocs(app, app.get("port"));
 		});
 	}
 });

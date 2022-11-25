@@ -5,7 +5,7 @@ import { client } from "../servers";
 class TodoController {
 	requiredFields: string[];
 	constructor() {
-		this.requiredFields = ["name", "description"];
+		this.requiredFields = ["name", "description", "user_id"];
 		this.createTodo = this.createTodo.bind(this);
 		this.updateTodo = this.updateTodo.bind(this);
 		this.deleteTodo = this.deleteTodo.bind(this);
@@ -109,10 +109,19 @@ class TodoController {
 	}
 	async findAllTodos(req: Request,res: Response){
 		try {
-			const { status } = req.query;
-			const todos = status ? 
-				await client.query("SELECT * FROM todos WHERE status = $1", [status])
-				: await client.query("SELECT * FROM todos");
+			const { status, id } = req.query;
+			const withStatus = status ? "status = $2": "";
+			const withId = id ? "WHERE user_id = $1": "";
+			
+			const queryWithId = `SELECT * FROM todos ${withId}`;
+			const queryWithStatus = `SELECT * FROM todos ${withId} AND ${withStatus}`;
+
+			if(!id) {
+				res.status(400).json({message: "id is required"});
+			}
+			
+			const todos = id && status ? await client.query(queryWithStatus, [id, status]) 
+				: await client.query(queryWithId, [id]);
 			
 			res.json(todos.rows);
 		} catch(err) {

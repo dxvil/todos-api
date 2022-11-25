@@ -52,7 +52,7 @@ class AuthController {
 	}
 	async login(req: Request, res: Response) {
 		try {
-			const {id, email, password} = req.body;
+			const {email, password} = req.body;
 
 			const isUserExist = await this.checkUserIsExist(email);
 			if((typeof isUserExist === "boolean") && !isUserExist) {
@@ -71,8 +71,10 @@ class AuthController {
 					});
 				}
 			}
-			const token = generateToken(id, email);
-			return res.json({token});
+			
+			const token = generateToken(isUserExist.id, email);
+
+			return res.json({token, user_id: isUserExist.id});
 		} catch(err) {
 			return res.send(err);
 		}
