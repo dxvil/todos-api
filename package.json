@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/servers.ts",
-    "build": "ts-node src/servers.ts && node src/servers.js"
+    "build": "ts-node src/servers.ts && node"
   },
   "author": "Mohyla <volikeurope@gmail.com>",
   "license": "ISC",

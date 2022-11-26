@@ -1,6 +1,15 @@
 # Todos REST API
 
-## Setup
+ #### Requirements:
+ #### Installed [Docker](https://www.docker.com/get-started/) and [Node](https://nodejs.org/en/download/)
+ 
+## Setup with Docker 
+```sh
+git clone git@github.com:dxvil/todos-api.git
+sudo docker-compose build
+sudo docker-compose up
+```
+Or: 
 ```sh 
 git clone git@github.com:dxvil/todos-api.git
 npm install
