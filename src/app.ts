@@ -1,11 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import apiErrorHandler from "./middlewares/apiErrorHandler";
+// import apiErrorHandler from "./middlewares/apiErrorHandler";
 import apiContentType from "./middlewares/apiContentType";
 import todoRouter from "./routers/todo.router";
 import authRouter from "./routers/auth.router";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import apiErrorHandler from "./middlewares/apiErrorHandler";
 
 dotenv.config();
 
@@ -23,8 +24,8 @@ app.use(apiContentType);
 app.use(express.json());
 
 // Set up routers
-app.use("/api/v1/todos", authMiddleware, todoRouter);
-app.use("/api/v1/auth", authRouter);
+// app.use("/api/v1/todos", authMiddleware, todoRouter);
+// app.use("/api/v1/auth", authRouter);
 
 // Custom API error handler
 app.use(apiErrorHandler);

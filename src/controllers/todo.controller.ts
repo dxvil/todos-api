@@ -44,9 +44,9 @@ class TodoController {
 			values ($1, $2, $3, $4, $5, $6) RETURNING *`, 
 			[name, description, status, user_id, created, created]);
 
-			res.json(newTodo.rows[0]);
+			res.status(201).json(newTodo.rows[0]);
 		} catch(err){
-			res.json(err);
+			res.status(500).json(err);
 		}
 	}
 	async updateTodo(req: Request,res: Response){
@@ -73,11 +73,11 @@ class TodoController {
 				prevTodoData.user_id
 			]);
 			
-			res.json({
+			res.status(204).json({
 				updated: "ok"
 			});
 		} catch(err) {
-			res.json(err);
+			res.status(500).json(err);
 		}
 	}
 	async deleteTodo(req: Request,res: Response) {
@@ -86,11 +86,11 @@ class TodoController {
 
 			await client.query("DELETE from todos WHERE id = $1", [id]);
 
-			res.json({
+			res.status(200).json({
 				deleted: "ok"
 			});
 		} catch(err) {
-			res.json(err);
+			res.status(500).json(err);
 		}
 	}
 	async findTodoById(req: Request,res: Response){
@@ -102,9 +102,9 @@ class TodoController {
 				res.status(404).json({message: "Item not Found"});
 			}
 
-			res.json(todo.rows[0]);
+			res.status(200).json(todo.rows[0]);
 		} catch(err) {
-			res.json(err);
+			res.status(500).json(err);
 		}
 	}
 	async findAllTodos(req: Request,res: Response){
@@ -123,9 +123,9 @@ class TodoController {
 			const todos = id && status ? await client.query(queryWithStatus, [id, status]) 
 				: await client.query(queryWithId, [id]);
 			
-			res.json(todos.rows);
+			res.status(200).json(todos.rows);
 		} catch(err) {
-			res.json(err);
+			res.status(500).json(err);
 		}
 	}
 }

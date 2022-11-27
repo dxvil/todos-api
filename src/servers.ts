@@ -1,5 +1,6 @@
 import { Client } from "pg";
 import app from "./app";
+
 import swaggerDocs from "./util/swagger";
 
 export const client = new Client({

@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { user } from "../models/UserValidator";
 import { generateToken } from "../services/authServices";
 
-class AuthController {
+export class AuthController {
 	constructor(){
 		this.registration = this.registration.bind(this);
 		this.login = this.login.bind(this);
@@ -16,6 +16,7 @@ class AuthController {
 		try {  
 			const { email, password }: TUser = req.body;
 			const isUserExist = await this.checkUserIsExist(email);
+
 			if(isUserExist && "rows" in isUserExist) {
 				return res.status(400).json({
 					"message": "This username is already registered"
@@ -23,18 +24,19 @@ class AuthController {
 			}
 			if(typeof isUserExist === "string") res.status(500).json({message: "Something went wrong..."});
 
-			const passwordCheck = this.checkPassword(password);
-            
-			if(passwordCheck) {
-				return res.status(400).json(passwordCheck);
-			}
-
 			const emailCheck = user.validateEmail(email);
 
-			if(!emailCheck) {
+			if(emailCheck === false) {
 				return res.status(400).json({
 					message: "Your email entered incorrectly"
 				});
+			}
+
+			const passwordCheck = this.checkPassword(password);
+            
+			if(passwordCheck) {
+				res.status(400).json(passwordCheck);
+				return res.end();
 			}
 
 			const created = new Date();
@@ -45,7 +47,7 @@ class AuthController {
             VALUES ($1, $2, $3, $3)
             `, [email, hashedPassword, created]);
             
-			res.json({message: "The user is registered successfully"});
+			return res.status(200).json({message: "The user is registered successfully"});
 		} catch(err) {
 			return res.send(err);
 		}
@@ -74,7 +76,7 @@ class AuthController {
 			
 			const token = generateToken(isUserExist.id, email);
 
-			return res.json({token, user_id: isUserExist.id});
+			return res.status(200).json({token, user_id: isUserExist.id});
 		} catch(err) {
 			return res.send(err);
 		}
